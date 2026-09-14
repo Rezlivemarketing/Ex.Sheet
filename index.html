@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Ex.Seacrh" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Ex.Seacrh — Extension Directory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Ex.Seacrh home">
+        <img src="assets/ex-sheet-logo.png" alt="Ex.Seacrh logo" />
+        <div>
+          <strong>Ex.Seacrh</strong>
+          <span>Extension Directory</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button id="installBtn" class="ghost-btn hidden" type="button" aria-label="Install Ex.Seacrh app">Install app</button>
+        <button id="adminOpenBtn" class="ghost-btn" type="button" aria-label="Open admin panel">
+          <span class="icon">⌘</span> Admin
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="eyebrow">Find anyone. Fast.</div>
+        <h1>Search a name, team or extension.</h1>
+        <p>Type a person’s name to see their extension, or type a team name to see the full team.</p>
+
+        <div class="search-card">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m1.35-5.15A6.5 6.5 0 1 1 5 11.5a6.5 6.5 0 0 1 13 0Z"/></svg>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="Try ‘Aryan’, ‘Accounts Team’ or ‘1259’" autofocus />
+            <kbd>⌘ K</kbd>
+          </div>
+          <div class="filters">
+            <select id="teamFilter" aria-label="Filter by team">
+              <option value="">All teams</option>
+            </select>
+            <select id="wingFilter" aria-label="Filter by wing">
+              <option value="">All wings</option>
+            </select>
+            <button id="clearBtn" type="button" class="text-btn">Clear</button>
+          </div>
+        </div>
+
+        <div id="statusStrip" class="status-strip" aria-live="polite"></div>
+      </section>
+
+      <section class="directory-section" aria-labelledby="resultsTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="resultsTitle">Directory</h2>
+            <p id="resultsMeta">Loading extension list…</p>
+          </div>
+          <div class="view-note">Tap an extension to copy</div>
+        </div>
+        <div id="resultsGrid" class="results-grid"></div>
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-icon">⌕</div>
+          <h3>No match found</h3>
+          <p>Try another spelling, team name, wing, or extension number.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Ex.Seacrh</span>
+      <span id="dataModeLabel">Directory ready</span>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="adminDialog" class="admin-dialog">
+    <div class="dialog-inner">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">Admin</div>
+          <h2>Manage extension directory</h2>
+        </div>
+        <button id="adminCloseBtn" class="icon-btn" type="button" aria-label="Close admin">×</button>
+      </div>
+
+      <section id="adminLoginView" class="admin-login">
+        <p>Enter the admin password to add, edit or delete directory entries.</p>
+        <form id="adminLoginForm">
+          <label>
+            Admin password
+            <input id="adminPasswordInput" type="password" autocomplete="current-password" placeholder="Enter password" required />
+          </label>
+          <button class="primary-btn" type="submit">Unlock admin</button>
+          <p id="adminLoginMessage" class="form-message"></p>
+        </form>
+      </section>
+
+      <section id="adminPanelView" class="admin-panel hidden">
+        <div class="admin-toolbar">
+          <div class="admin-search-wrap">
+            <input id="adminSearchInput" type="search" placeholder="Search records…" />
+          </div>
+          <button id="addRecordBtn" class="primary-btn" type="button">+ Add record</button>
+        </div>
+        <div id="adminModeNotice" class="admin-mode-notice"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Extension</th><th>Team</th><th>Wing</th><th></th></tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </dialog>
+
+  <dialog id="recordDialog" class="record-dialog">
+    <form id="recordForm" method="dialog">
+      <div class="dialog-head compact">
+        <div>
+          <div class="eyebrow">Directory record</div>
+          <h2 id="recordDialogTitle">Add record</h2>
+        </div>
+        <button id="recordCloseBtn" class="icon-btn" type="button" aria-label="Close record editor">×</button>
+      </div>
+      <input id="recordId" type="hidden" />
+      <div class="form-grid">
+        <label class="full">Name<input id="recordName" required maxlength="80" placeholder="Person or room name" /></label>
+        <label>Extension<input id="recordExtension" required inputmode="numeric" pattern="[0-9]{3,6}" maxlength="6" placeholder="1259" /></label>
+        <label>Wing<input id="recordWing" required maxlength="40" placeholder="Wing-A" /></label>
+        <label class="full">Team<input id="recordTeam" required maxlength="80" placeholder="Product / Marketing" /></label>
+      </div>
+      <div class="record-actions">
+        <button id="deleteRecordBtn" type="button" class="danger-btn hidden">Delete</button>
+        <div class="spacer"></div>
+        <button id="cancelRecordBtn" type="button" class="ghost-btn">Cancel</button>
+        <button id="saveRecordBtn" type="submit" class="primary-btn">Save record</button>
+      </div>
+      <p id="recordFormMessage" class="form-message"></p>
+    </form>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="seed-data.js"></script>
+  <script src="app.js" defer></script>
+  <script src="pwa.js" defer></script>
+</body>
+</html>
