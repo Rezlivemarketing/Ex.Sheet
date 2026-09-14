@@ -113,7 +113,7 @@
         const saved = localStorage.getItem('exsearch-demo-records');
         records = saved ? JSON.parse(saved) : base;
         els.dataModeLabel.textContent = 'Demo data';
-        setStatus('<strong>Preview mode:</strong> connect Google Apps Script to make edits sync to the Sheet');
+        setStatus('');
       }
       state.records = records.map(cleanRecord).filter(Boolean);
       populateFilters();
@@ -214,6 +214,7 @@
 
   function setStatus(html) {
     els.statusStrip.innerHTML = html;
+    els.statusStrip.classList.toggle('hidden', !html);
   }
 
   let toastTimer;
